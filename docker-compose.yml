@@ -1,0 +1,40 @@
+services:
+  iibs_apache:
+    build:
+      context: ./docker/apache
+    container_name: iibs_apache
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped
+    depends_on:
+      - iibs_postgres
+
+  iibs_postgres:
+    image: postgres:16
+    container_name: iibs_postgres
+    environment:
+      POSTGRES_DB: gestiondesbuspoo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "54:80"
+    depends_on:
+      - iibs_postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -2,16 +2,18 @@
 
 class Database {
     private $connexion;
-    private $host = 'localhost';
+
+    private $host = 'iibs_postgres';
+    private $port = 5432;
     private $dbname = 'gestiondesbuspoo';
-    private $username = 'root';
-    private $password = '';
+    private $username = 'postgres';
+    private $password = 'root';
 
     public function getConnexion() {
         if ($this->connexion === null) {
             try {
                 $this->connexion = new PDO(
-                    "mysql:host={$this->host};dbname={$this->dbname};charset=utf8",
+                    "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname}",
                     $this->username,
                     $this->password
                 );
@@ -22,4 +24,5 @@ class Database {
         }
         return $this->connexion;
     }
+
 }
