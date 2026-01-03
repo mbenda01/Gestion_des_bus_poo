@@ -49,9 +49,10 @@ jobs:
       - name: Build & Push image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: docker/apache/Dockerfile
+          context: ./docker/apache
+          file: ./docker/apache/Dockerfile
           push: true
           tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
