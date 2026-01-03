@@ -1,4 +1,4 @@
-name: Build & Push to Docker Hub (versioned)
+name: Build & Push to Docker Hub (GitHub versioning)
 
 on:
   push:
@@ -24,25 +24,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Compute image tags
+      - name: Compute image tags (GitHub-driven)
         id: tags
         run: |
           REPO="${{ secrets.DOCKERHUB_USERNAME }}/transitflow-apache"
           SHORT_SHA="${GITHUB_SHA::7}"
 
+          # Tags par défaut (push sur main) : latest + sha
+          TAGS="${REPO}:latest
+          ${REPO}:sha-${SHORT_SHA}"
+
+          # Si c'est un tag Git (v1.2.3), on pousse aussi la version 1.2.3
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"   # ex: v1.2.3
+            VERSION="${VERSION#v}"               # ex: 1.2.3
+            TAGS="${REPO}:${VERSION}
+            ${REPO}:latest"
+          fi
+
           {
             echo "tags<<EOF"
-            echo "${REPO}:latest"
-            echo "${REPO}:sha-${SHORT_SHA}"
-            echo "${REPO}:build-${GITHUB_RUN_NUMBER}"
-
-            # Si c'est un push de tag Git "v1.2.3" => tag Docker "1.2.3"
-            if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-              TAG_NAME="${GITHUB_REF#refs/tags/}"   # ex: v1.2.3
-              TAG_NAME="${TAG_NAME#v}"             # ex: 1.2.3
-              echo "${REPO}:${TAG_NAME}"
-            fi
-
+            echo "$TAGS"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -55,4 +57,3 @@ jobs:
           tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
