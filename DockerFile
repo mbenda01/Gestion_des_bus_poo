@@ -23,6 +23,9 @@ RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copie du code source
+COPY . /var/www/html
+
 WORKDIR /var/www/html
 
 # Permissions

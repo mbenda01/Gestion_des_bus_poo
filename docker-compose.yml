@@ -1,16 +1,7 @@
-services:
-  iibs_apache:
-    build:
-      context: ./docker/apache
-    container_name: iibs_apache
-    ports:
-      - "80:80"
-    volumes:
-      - ./:/var/www/html
-    restart: unless-stopped
-    depends_on:
-      - iibs_postgres
+version: '3.8'
 
+services:
+  # PostgreSQL Database
   iibs_postgres:
     image: postgres:16
     container_name: iibs_postgres
@@ -23,18 +14,61 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - iibs_network
 
+  # pgAdmin Interface
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@local.com
       PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 80
     ports:
       - "54:80"
     depends_on:
       - iibs_postgres
     restart: unless-stopped
+    networks:
+      - iibs_network
+
+  # PHP-FPM Service
+  iibs_php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: iibs_php
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped
+    networks:
+      - iibs_network
+    depends_on:
+      - iibs_postgres
+
+  # Apache Web Server avec SSL
+  iibs_apache:
+    build:
+      context: ./docker/apache
+      dockerfile: Dockerfile
+    container_name: iibs_apache
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/apache/ssl:/etc/apache2/ssl
+    restart: unless-stopped
+    depends_on:
+      - iibs_php
+      - iibs_postgres
+    networks:
+      - iibs_network
 
 volumes:
   postgres_data:
+
+networks:
+  iibs_network:
+    driver: bridge
