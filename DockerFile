@@ -1,6 +1,5 @@
 FROM php:8.2-fpm
 
-# Installation des dépendances système
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -10,25 +9,20 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Installation des extensions PHP
 RUN docker-php-ext-install \
     pdo \
     pdo_pgsql \
     pgsql \
     zip
 
-# Configuration de PHP
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copie du code source
 COPY . /var/www/html
 
 WORKDIR /var/www/html
 
-# Permissions
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 9000

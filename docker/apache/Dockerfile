@@ -1,5 +1,3 @@
-#docker/apache/DockerFile
-
 FROM php:8.2-apache
 
 RUN apt-get update \
@@ -8,7 +6,6 @@ RUN apt-get update \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# Mettre le vhost qui pointe vers /public
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/html
