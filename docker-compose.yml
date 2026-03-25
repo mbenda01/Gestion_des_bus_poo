@@ -32,9 +32,7 @@ services:
       - iibs_network
 
   iibs_php:
-    build:
-      context: ./docker/php
-      dockerfile: Dockerfile
+    image: mbenda01/transitflow-php:latest   # ← remplace build:
     container_name: iibs_php
     volumes:
       - ./:/var/www/html
@@ -45,9 +43,7 @@ services:
       - iibs_postgres
 
   iibs_apache:
-    build:
-      context: ./docker/apache
-      dockerfile: Dockerfile
+    image: mbenda01/transitflow-apache:latest  # ← remplace build:
     container_name: iibs_apache
     ports:
       - "80:80"
