@@ -6,6 +6,7 @@ pipeline {
         IMAGE_PHP    = "mbenda01/transitflow-php"
     }
 
+
     stages {
         stage('Checkout') {
             steps {
@@ -44,7 +45,7 @@ pipeline {
     }
 
     post {
-        success { echo 'TransitFlow déployé avec succès !' }
+        success { echo 'TransitFlow deploye avec succès !' }
         failure { echo 'Echec du pipeline.' }
     }
 }
