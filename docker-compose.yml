@@ -32,7 +32,7 @@ services:
       - iibs_network
 
   iibs_php:
-    image: mbenda01/transitflow-php:latest   # ← remplace build:
+    image: 172.17.0.3:5000/transitflow-php:latest   # ← remplace build:
     container_name: iibs_php
     volumes:
       - ./:/var/www/html
@@ -43,7 +43,7 @@ services:
       - iibs_postgres
 
   iibs_apache:
-    image: mbenda01/transitflow-apache:latest  # ← remplace build:
+    image: 172.17.0.3:5000/transitflow-apache:latest
     container_name: iibs_apache
     ports:
       - "80:80"

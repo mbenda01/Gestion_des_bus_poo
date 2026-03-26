@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_APACHE = "localhost:5000/transitflow-apache"
-        IMAGE_PHP    = "localhost:5000/transitflow-php"
+        NEXUS_HOST   = "172.17.0.3:5000"
+        IMAGE_APACHE = "172.17.0.3:5000/transitflow-apache"
+        IMAGE_PHP    = "172.17.0.3:5000/transitflow-php"
     }
-
 
     stages {
         stage('Checkout') {
@@ -24,8 +24,16 @@ pipeline {
 
         stage('Push Nexus') {
             steps {
-                sh "docker push ${IMAGE_APACHE}:latest"
-                sh "docker push ${IMAGE_PHP}:latest"
+                withCredentials([usernamePassword(
+                    credentialsId: 'nexus-credentials',
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+                    sh "echo $NEXUS_PASS | docker login ${NEXUS_HOST} -u $NEXUS_USER --password-stdin"
+                    sh "docker push ${IMAGE_APACHE}:latest"
+                    sh "docker push ${IMAGE_PHP}:latest"
+                    sh "docker logout ${NEXUS_HOST}"
+                }
             }
         }
 
@@ -38,7 +46,7 @@ pipeline {
     }
 
     post {
-        success { echo 'TransitFlow deploye avec succès !' }
-        failure { echo 'Echec du pipeline.' }
+        success { echo 'TransitFlow déployé avec succès !' }
+        failure { echo 'Échec du pipeline.' }
     }
 }
