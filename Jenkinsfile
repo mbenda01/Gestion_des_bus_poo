@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_APACHE = "mbenda01/transitflow-apache"
-        IMAGE_PHP    = "mbenda01/transitflow-php"
+        IMAGE_APACHE = "localhost:5000/transitflow-apache"
+        IMAGE_PHP    = "localhost:5000/transitflow-php"
     }
 
 
@@ -22,17 +22,10 @@ pipeline {
             }
         }
 
-        stage('Push Docker Hub') {
+        stage('Push Nexus') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push ${IMAGE_APACHE}:latest"
-                    sh "docker push ${IMAGE_PHP}:latest"
-                }
+                sh "docker push ${IMAGE_APACHE}:latest"
+                sh "docker push ${IMAGE_PHP}:latest"
             }
         }
 
