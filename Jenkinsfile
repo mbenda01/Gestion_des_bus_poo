@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                cleanWs()
+                deleteDir()
                 echo 'Récupération du code...'
                 checkout scm
             }
