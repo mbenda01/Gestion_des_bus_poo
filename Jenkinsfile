@@ -19,8 +19,8 @@ pipeline {
 
         stage('Build images') {
             steps {
-                sh "docker build -t ${IMAGE_APACHE}:latest ./docker/apache"
-                sh "docker build -t ${IMAGE_PHP}:latest ./docker/php"
+                sh "docker build --network=host -t ${IMAGE_APACHE}:latest ./docker/apache"
+                sh "docker build --network=host -t ${IMAGE_PHP}:latest ./docker/php"
             }
         }
 
