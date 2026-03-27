@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_HOST   = "host.docker.internal:5000"
-        IMAGE_APACHE = "host.docker.internal:5000/transitflow-apache"
-        IMAGE_PHP    = "host.docker.internal:5000/transitflow-php"
+        NEXUS_HOST      = "host.docker.internal:5000"
+        IMAGE_APACHE    = "host.docker.internal:5000/transitflow-apache"
+        IMAGE_PHP       = "host.docker.internal:5000/transitflow-php"
+        DOCKER_BUILDKIT = "0"   // ← désactive BuildKit
     }
 
     stages {
