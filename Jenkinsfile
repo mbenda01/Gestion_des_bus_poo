@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_HOST   = "172.17.0.3:5000"
-        IMAGE_APACHE = "172.17.0.3:5000/transitflow-apache"
-        IMAGE_PHP    = "172.17.0.3:5000/transitflow-php"
+        NEXUS_HOST   = "host.docker.internal:5000"
+        IMAGE_APACHE = "host.docker.internal:5000/transitflow-apache"
+        IMAGE_PHP    = "host.docker.internal:5000/transitflow-php"
     }
 
     stages {
         stage('Checkout') {
             steps {
+                cleanWs()
                 echo 'Récupération du code...'
                 checkout scm
             }
@@ -29,10 +30,10 @@ pipeline {
                     usernameVariable: 'NEXUS_USER',
                     passwordVariable: 'NEXUS_PASS'
                 )]) {
-                    sh "echo $NEXUS_PASS | docker login ${NEXUS_HOST} -u $NEXUS_USER --password-stdin"
+                    sh 'echo "$NEXUS_PASS" | docker login host.docker.internal:5000 -u "$NEXUS_USER" --password-stdin'
                     sh "docker push ${IMAGE_APACHE}:latest"
                     sh "docker push ${IMAGE_PHP}:latest"
-                    sh "docker logout ${NEXUS_HOST}"
+                    sh "docker logout host.docker.internal:5000"
                 }
             }
         }
